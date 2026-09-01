@@ -11,8 +11,11 @@ const badgeVariants = cva(
         secondary: "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
         destructive: "border-transparent bg-destructive text-destructive-foreground shadow hover:bg-destructive/80",
         outline: "text-foreground",
-        success: "border-transparent bg-green-600 text-white",
-        warning: "border-transparent bg-yellow-500 text-white",
+        success: "border-transparent bg-success text-success-foreground",
+        warning: "border-transparent bg-warning text-warning-foreground",
+        // Tinted pills used for metadata chips across the browse/report views.
+        soft: "border-primary/20 bg-primary/10 text-primary",
+        "soft-accent": "border-accent/20 bg-accent/10 text-accent",
       },
     },
     defaultVariants: {

@@ -90,29 +90,36 @@ export function ReportForm({ type }: ReportFormProps) {
 
   if (submitted) {
     return (
-      <Card className="max-w-lg mx-auto">
-        <CardContent className="pt-6 text-center">
-          <CheckCircle className="w-12 h-12 text-green-600 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold mb-2">
-            {type === "lost" ? "Lost" : "Found"} Report Submitted!
+      <Card variant="glow" className="mx-auto max-w-lg">
+        <CardContent className="flex flex-col items-center pt-10 pb-10 text-center">
+          <span className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-success/10 text-success">
+            <CheckCircle className="h-7 w-7" />
+          </span>
+          <h3 className="text-xl font-semibold">
+            {type === "lost" ? "Lost" : "Found"} report submitted
           </h3>
-          <p className="text-muted-foreground mb-4">
-            We'll notify you if we find a match. You can also browse found documents to check for yourself.
+          <p className="mt-2 max-w-sm text-sm text-muted-foreground">
+            We&apos;ll notify you as soon as we find a match. You can also browse found
+            documents yourself in the meantime.
           </p>
-          <Button onClick={() => {
-            setSubmitted(false);
-            setFormData({
-              documentType: "",
-              city: "",
-              location: "",
-              partialIdentifier: "",
-              description: "",
-              eventDate: new Date().toISOString().split("T")[0],
-              fullDocumentNumber: "",
-              dateOfBirth: "",
-            });
-          }}>
-            Submit Another Report
+          <Button
+            variant="outline"
+            className="mt-6"
+            onClick={() => {
+              setSubmitted(false);
+              setFormData({
+                documentType: "",
+                city: "",
+                location: "",
+                partialIdentifier: "",
+                description: "",
+                eventDate: new Date().toISOString().split("T")[0],
+                fullDocumentNumber: "",
+                dateOfBirth: "",
+              });
+            }}
+          >
+            Submit another report
           </Button>
         </CardContent>
       </Card>
@@ -120,12 +127,10 @@ export function ReportForm({ type }: ReportFormProps) {
   }
 
   return (
-    <Card className="max-w-lg mx-auto">
+    <Card className="mx-auto max-w-lg">
       <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle>
-            Report {type === "lost" ? "Lost" : "Found"} Document
-          </CardTitle>
+        <div className="flex items-center justify-between gap-3">
+          <CardTitle>Report {type === "lost" ? "lost" : "found"} document</CardTitle>
           <Badge variant={type === "lost" ? "destructive" : "success"}>
             {type === "lost" ? "Lost" : "Found"}
           </Badge>
@@ -139,8 +144,11 @@ export function ReportForm({ type }: ReportFormProps) {
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4">
           {error && (
-            <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-md text-red-700 text-sm">
-              <AlertCircle className="w-4 h-4" />
+            <div
+              role="alert"
+              className="flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive"
+            >
+              <AlertCircle className="h-4 w-4 shrink-0" />
               {error}
             </div>
           )}
@@ -268,14 +276,14 @@ export function ReportForm({ type }: ReportFormProps) {
           )}
         </CardContent>
         <CardFooter>
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
+          <Button type="submit" variant="gradient" className="w-full" disabled={isSubmitting}>
             {isSubmitting ? (
               <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Submitting...
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Submitting…
               </>
             ) : (
-              `Report ${type === "lost" ? "Lost" : "Found"} Document`
+              `Report ${type === "lost" ? "lost" : "found"} document`
             )}
           </Button>
         </CardFooter>

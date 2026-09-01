@@ -5,8 +5,10 @@ import { api } from "@/lib/convex-api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MapPin, Calendar, FileText, Loader2 } from "lucide-react";
-import { SignedIn, SignedOut, useUser } from "@clerk/nextjs";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Reveal } from "@/components/motion/reveal";
+import { Calendar, FileText, Inbox, MapPin, PlusCircle } from "lucide-react";
+import { SignedIn, SignedOut } from "@clerk/nextjs";
 import Link from "next/link";
 
 const DOCUMENT_LABELS: Record<string, string> = {
@@ -25,97 +27,147 @@ function ItemCard({ item }: { item: any }) {
   });
 
   return (
-    <Card>
+    <Card variant="interactive" className="h-full">
       <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center gap-2">
           <Badge variant={item.kind === "found" ? "success" : "secondary"}>
             {item.kind === "found" ? "Found" : "Lost"}
           </Badge>
-          <span className="text-sm text-muted-foreground">
+          <Badge variant={item.status === "open" ? "soft" : "outline"} className="capitalize">
+            {item.status}
+          </Badge>
+          <Badge variant="outline" className="ml-auto font-normal">
             {DOCUMENT_LABELS[item.documentType] || item.documentType}
-          </span>
+          </Badge>
         </div>
-        <Badge variant={item.status === "open" ? "default" : "outline"} className="w-fit">
-          {item.status}
-        </Badge>
       </CardHeader>
-      <CardContent className="space-y-2">
+      <CardContent className="space-y-2.5">
         {item.partialIdentifier && (
-          <div className="flex items-center gap-2 text-sm">
-            <FileText className="w-4 h-4 text-muted-foreground" />
-            <span>…{item.partialIdentifier}</span>
+          <div className="flex items-center gap-2.5 text-sm font-medium">
+            <FileText className="h-4 w-4 shrink-0 text-primary" />
+            <span className="tabular-nums">…{item.partialIdentifier}</span>
           </div>
         )}
-        <div className="flex items-center gap-2 text-sm">
-          <MapPin className="w-4 h-4 text-muted-foreground" />
-          <span>{item.city}{item.location && ` - ${item.location}`}</span>
+        <div className="flex items-center gap-2.5 text-sm text-muted-foreground">
+          <MapPin className="h-4 w-4 shrink-0" />
+          <span className="truncate">
+            {item.city}
+            {item.location && ` · ${item.location}`}
+          </span>
         </div>
-        <div className="flex items-center gap-2 text-sm">
-          <Calendar className="w-4 h-4 text-muted-foreground" />
+        <div className="flex items-center gap-2.5 text-sm text-muted-foreground">
+          <Calendar className="h-4 w-4 shrink-0" />
           <span>{eventDate}</span>
         </div>
         {item.description && (
-          <p className="text-sm text-muted-foreground mt-2">
-            {item.description}
-          </p>
+          <p className="pt-1 text-sm text-muted-foreground">{item.description}</p>
         )}
       </CardContent>
     </Card>
   );
 }
 
+function ReportsSkeleton() {
+  return (
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {Array.from({ length: 3 }).map((_, i) => (
+        <Card key={i}>
+          <CardHeader className="pb-3">
+            <div className="flex gap-2">
+              <Skeleton className="h-5 w-16 rounded-md" />
+              <Skeleton className="h-5 w-14 rounded-md" />
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <Skeleton className="h-4 w-2/3" />
+            <Skeleton className="h-4 w-1/2" />
+            <Skeleton className="h-4 w-1/3" />
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
+}
+
 export default function MyReportsPage() {
-  const { user } = useUser();
   const myItems = useQuery(api.items.getMyItems);
 
   return (
-    <main className="container mx-auto px-4 py-8">
+    <main>
       <SignedOut>
-        <Card className="max-w-md mx-auto mt-12">
-          <CardHeader className="text-center">
-            <CardTitle>Sign In Required</CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-4">
-            <p className="text-center text-muted-foreground">
-              You need to sign in to view your reports.
-            </p>
-            <Link href="/sign-in" className="w-full">
-              <Button className="w-full">Sign In</Button>
-            </Link>
-          </CardContent>
-        </Card>
+        <div className="container mx-auto px-4 py-20">
+          <Card variant="glass" className="mx-auto max-w-md text-center">
+            <CardHeader>
+              <span className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                <Inbox className="h-5 w-5" />
+              </span>
+              <CardTitle>Sign in required</CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-4">
+              <p className="text-sm text-muted-foreground">
+                Sign in to see the documents you&apos;ve reported.
+              </p>
+              <Button asChild variant="gradient" className="w-full">
+                <Link href="/sign-in">Sign in</Link>
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       </SignedOut>
 
       <SignedIn>
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">My Reports</h1>
-          <p className="text-muted-foreground">
-            View all documents you've reported as lost or found
-          </p>
-        </div>
+        <section className="relative overflow-hidden border-b bg-gradient-subtle px-4 py-14">
+          <div className="bg-grid bg-grid-fade absolute inset-0 opacity-60" />
+          <div className="container relative mx-auto flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+                My <span className="text-gradient">reports</span>
+              </h1>
+              <p className="mt-3 text-muted-foreground">
+                Everything you&apos;ve reported as lost or found.
+              </p>
+            </div>
+            <Button asChild variant="gradient">
+              <Link href="/report">
+                <PlusCircle />
+                New report
+              </Link>
+            </Button>
+          </div>
+        </section>
 
-        {myItems === undefined ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
-          </div>
-        ) : myItems.length === 0 ? (
-          <Card className="p-12 text-center">
-            <FileText className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-            <h3 className="text-lg font-semibold mb-2">No reports yet</h3>
-            <p className="text-muted-foreground mb-4">
-              You haven't reported any lost or found documents
-            </p>
-            <Link href="/report">
-              <Button>Report a Document</Button>
-            </Link>
-          </Card>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {myItems.map((item) => (
-              <ItemCard key={item._id} item={item} />
-            ))}
-          </div>
-        )}
+        <div className="container mx-auto px-4 py-8">
+          {myItems === undefined ? (
+            <ReportsSkeleton />
+          ) : myItems.length === 0 ? (
+            <Card variant="glass" className="py-16 text-center">
+              <CardContent className="flex flex-col items-center">
+                <span className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                  <FileText className="h-6 w-6" />
+                </span>
+                <h3 className="text-lg font-semibold">No reports yet</h3>
+                <p className="mt-2 max-w-sm text-sm text-muted-foreground">
+                  You haven&apos;t reported any lost or found documents. It only takes a minute.
+                </p>
+                <Button asChild variant="gradient" className="mt-6">
+                  <Link href="/report">
+                    <PlusCircle />
+                    Report a document
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <Reveal
+              stagger={0.06}
+              className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3"
+            >
+              {myItems.map((item: any) => (
+                <ItemCard key={item._id} item={item} />
+              ))}
+            </Reveal>
+          )}
+        </div>
       </SignedIn>
     </main>
   );
