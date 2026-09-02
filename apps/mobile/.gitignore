@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+
+# Expo
+.expo/
+expo-env.d.ts
+.expo-shared/
+
+# Native build
+android/
+ios/
+
+# Build
+dist/
+build/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
+.DS_Store
+
+# TypeScript
+*.tsbuildinfo
+
+# Convex (will be generated)
+convex/_generated/

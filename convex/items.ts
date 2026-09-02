@@ -45,6 +45,14 @@ export const getItemById = query({
   },
 });
 
+/** Resolves a stored document photo to a public URL (or null if absent). */
+export const getPhotoUrl = query({
+  args: { storageId: v.id("_storage") },
+  handler: async (ctx, args) => {
+    return await ctx.storage.getUrl(args.storageId);
+  },
+});
+
 export const reportLost = mutation({
   args: {
     documentType: v.string(),
@@ -77,6 +85,7 @@ export const reportLost = mutation({
       itemId,
       fullDocumentNumber,
       dob: dateOfBirth || "",
+      failedAttempts: 0,
     });
 
     // Trigger matching

@@ -8,7 +8,7 @@ export default defineSchema({
     phone: v.optional(v.string()),
     avatarUrl: v.optional(v.string()),
     role: v.union(v.literal("user"), v.literal("admin")),
-  }).index("by_clerkId", ["clerkId"]),
+  }).index("by_clerk_id", ["clerkId"]),
 
   items: defineTable({
     reporterId: v.id("users"),
@@ -24,10 +24,13 @@ export default defineSchema({
     status: v.union(
       v.literal("open"),
       v.literal("matched"),
+      v.literal("pending_verification"),
       v.literal("claimed"),
       v.literal("closed")
     ),
-  }),
+  })
+    .index("by_reporter", ["reporterId"])
+    .index("by_document_type", ["documentType", "kind", "status"]),
 
   verificationSecrets: defineTable({
     itemId: v.id("items"),
@@ -35,7 +38,7 @@ export default defineSchema({
     dob: v.string(),
     failedAttempts: v.number(),
     lockedAt: v.optional(v.number()),
-  }).index("by_itemId", ["itemId"]),
+  }).index("by_item", ["itemId"]),
 
   matches: defineTable({
     lostItemId: v.id("items"),
@@ -43,12 +46,13 @@ export default defineSchema({
     status: v.union(
       v.literal("suggested"),
       v.literal("pending_verification"),
+      v.literal("verified"),
       v.literal("confirmed"),
       v.literal("rejected")
     ),
     score: v.number(),
     verificationAttempts: v.number(),
-  }),
+  }).index("by_status", ["status"]),
 
   notifications: defineTable({
     userId: v.id("users"),
@@ -57,5 +61,5 @@ export default defineSchema({
     matchId: v.optional(v.id("matches")),
     body: v.string(),
     read: v.boolean(),
-  }).index("by_user", ["userId"]),
+  }).index("by_user_unread", ["userId", "read"]),
 });

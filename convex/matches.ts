@@ -119,3 +119,44 @@ export const reject = mutation({
     await ctx.db.patch(args.matchId, { status: "rejected" });
   },
 });
+
+/**
+ * Returns all matches involving the signed-in user's reports, with the
+ * counterpart item embedded for display. Covers every status so the client can
+ * render suggested, pending-verification and verified states.
+ */
+export const forUser = query({
+  args: {},
+  handler: async (ctx) => {
+    const user = await requireUser(ctx);
+    const myItems = await ctx.db
+      .query("items")
+      .withIndex("by_reporter", (q) => q.eq("reporterId", user._id))
+      .collect();
+    const myItemIds = new Set(myItems.map((i) => i._id));
+
+    const allMatches = await ctx.db.query("matches").collect();
+
+    const result = [];
+    for (const match of allMatches) {
+      const involvesMe =
+        myItemIds.has(match.lostItemId) || myItemIds.has(match.foundItemId);
+      if (!involvesMe) continue;
+
+      const lostItem = await ctx.db.get(match.lostItemId);
+      const foundItem = await ctx.db.get(match.foundItemId);
+      if (!lostItem || !foundItem) continue;
+
+      result.push({
+        matchId: match._id,
+        status: match.status,
+        score: match.score,
+        verificationAttempts: match.verificationAttempts,
+        lostItem,
+        foundItem,
+      });
+    }
+
+    return result;
+  },
+});

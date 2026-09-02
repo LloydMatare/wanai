@@ -1,4 +1,4 @@
-import { internalMutation, query, QueryCtx, MutationCtx } from "./_generated/server";
+import { internalMutation, mutation, query, QueryCtx, MutationCtx } from "./_generated/server";
 import { v } from "convex/values";
 
 /** Looks up the Convex user row for the currently signed-in Clerk user. */
@@ -41,6 +41,42 @@ export const ensureUser = internalMutation({
     if (existing) return existing._id;
     return await ctx.db.insert("users", {
       clerkId: args.clerkId,
+      name: args.name,
+      avatarUrl: args.avatarUrl,
+      role: "user",
+    });
+  },
+});
+
+/**
+ * Public-safe counterpart to `ensureUser` for client-side sign-in. It can only
+ * ever create/update the row for the *currently signed-in* Clerk user, and can
+ * never grant the admin role.
+ */
+export const createOrUpdateUser = mutation({
+  args: {
+    name: v.string(),
+    avatarUrl: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) throw new Error("Not signed in");
+
+    const existing = await ctx.db
+      .query("users")
+      .withIndex("by_clerk_id", (q) => q.eq("clerkId", identity.subject))
+      .unique();
+
+    if (existing) {
+      await ctx.db.patch(existing._id, {
+        name: args.name,
+        avatarUrl: args.avatarUrl ?? existing.avatarUrl,
+      });
+      return existing._id;
+    }
+
+    return await ctx.db.insert("users", {
+      clerkId: identity.subject,
       name: args.name,
       avatarUrl: args.avatarUrl,
       role: "user",
