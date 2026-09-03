@@ -10,6 +10,7 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import { useMutation } from "convex/react";
 import { api } from "../../lib/convex-api";
+import { colors } from "../lib/theme";
 import { Button } from "../components/ui/Button";
 import { FormField } from "../components/ui/FormField";
 import { Select } from "../components/ui/Select";
@@ -132,14 +133,14 @@ export function ReportScreen() {
 
   if (submitted) {
     return (
-      <View className="flex-1 items-center justify-center bg-slate-50 px-6">
-        <View className="h-16 w-16 items-center justify-center rounded-full bg-green-100">
-          <CheckCircle size={32} color="#16a34a" />
+      <View className="flex-1 items-center justify-center bg-background px-6">
+        <View className="h-16 w-16 items-center justify-center rounded-full bg-success/10">
+          <CheckCircle size={32} color={colors.success} />
         </View>
-        <Text className="mt-5 text-xl font-bold text-slate-900">
+        <Text className="mt-5 text-xl font-bold text-foreground">
           {kind === "lost" ? "Lost" : "Found"} report submitted
         </Text>
-        <Text className="mt-2 text-center text-sm text-slate-500">
+        <Text className="mt-2 text-center text-sm text-muted-foreground">
           We'll notify you as soon as we find a match. You can browse documents in
           the meantime.
         </Text>
@@ -172,14 +173,14 @@ export function ReportScreen() {
 
   return (
     <ScrollView
-      className="flex-1 bg-slate-50"
+      className="flex-1 bg-background"
       contentContainerClassName="p-4 pb-10"
       keyboardShouldPersistTaps="handled"
     >
-      <Text className="text-2xl font-bold text-slate-900">
+      <Text className="text-2xl font-bold text-foreground">
         Report a document
       </Text>
-      <Text className="mt-1 text-sm text-slate-500">
+      <Text className="mt-1 text-sm text-muted-foreground">
         Share only a partial identifier. We handle matching and verification.
       </Text>
 
@@ -266,7 +267,7 @@ export function ReportScreen() {
 
         {/* Photo attach */}
         <View className="gap-1.5">
-          <Text className="text-sm font-semibold text-slate-800">
+          <Text className="text-sm font-semibold text-foreground">
             Photo (optional)
           </Text>
           {photoUri ? (
@@ -280,16 +281,16 @@ export function ReportScreen() {
                 onPress={() => setPhotoUri(null)}
                 className="absolute right-2 top-2 h-9 w-9 items-center justify-center rounded-full bg-black/60"
               >
-                <Trash2 size={18} color="#fff" />
+                <Trash2 size={18} color={colors.white} />
               </Pressable>
             </View>
           ) : (
             <Pressable
               onPress={pickPhoto}
-              className="h-24 items-center justify-center rounded-xl border border-dashed border-slate-300 bg-white"
+              className="h-24 items-center justify-center rounded-xl border border-dashed border-input bg-card"
             >
-              <Camera size={28} color="#64748b" />
-              <Text className="mt-2 text-sm text-slate-500">
+              <Camera size={28} color={colors.mutedForeground} />
+              <Text className="mt-2 text-sm text-muted-foreground">
                 Add a photo of the document
               </Text>
             </Pressable>
@@ -297,8 +298,8 @@ export function ReportScreen() {
         </View>
 
         {error ? (
-          <View className="rounded-xl border border-red-200 bg-red-50 p-3">
-            <Text className="text-sm text-red-600">{error}</Text>
+          <View className="rounded-xl border border-destructive/20 bg-destructive/5 p-3">
+            <Text className="text-sm text-destructive">{error}</Text>
           </View>
         ) : null}
 

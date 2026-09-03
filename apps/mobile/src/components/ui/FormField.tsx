@@ -5,6 +5,7 @@ import {
   TextInputProps,
   View,
 } from "react-native";
+import { colors } from "../../lib/theme";
 
 interface FormFieldProps extends TextInputProps {
   label: string;
@@ -22,18 +23,18 @@ export function FormField({
 }: FormFieldProps) {
   return (
     <View className={`gap-1.5 ${containerClassName}`}>
-      <Text className="text-sm font-semibold text-slate-800">{label}</Text>
+      <Text className="text-sm font-semibold text-foreground">{label}</Text>
       <TextInput
-        placeholderTextColor="#94a3b8"
-        className={`rounded-xl border bg-white px-4 py-3 text-base text-slate-900 ${
-          error ? "border-red-400" : "border-slate-300"
+        placeholderTextColor={colors.mutedForeground}
+        className={`rounded-xl border bg-card px-4 py-3 text-base text-foreground ${
+          error ? "border-destructive" : "border-input"
         }`}
         {...inputProps}
       />
       {error ? (
-        <Text className="text-xs text-red-600">{error}</Text>
+        <Text className="text-xs text-destructive">{error}</Text>
       ) : hint ? (
-        <Text className="text-xs text-slate-500">{hint}</Text>
+        <Text className="text-xs text-muted-foreground">{hint}</Text>
       ) : null}
     </View>
   );

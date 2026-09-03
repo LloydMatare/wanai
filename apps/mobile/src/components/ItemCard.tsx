@@ -3,6 +3,7 @@ import { Image, Text, View } from "react-native";
 import { useQuery } from "convex/react";
 import { MapPin, Calendar, FileText, ShieldAlert } from "lucide-react-native";
 import { api } from "../../lib/convex-api";
+import { colors } from "../lib/theme";
 import { Badge } from "./ui/Badge";
 import {
   formatDate,
@@ -36,7 +37,7 @@ export function ItemCard({ item, showStatus = false }: ItemCardProps) {
   );
 
   return (
-    <View className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+    <View className="rounded-2xl border border-border bg-card p-4 shadow-sm">
       <View className="mb-2 flex-row items-center gap-2">
         <Badge
           label={item.kind === "found" ? "Found" : "Lost"}
@@ -56,35 +57,35 @@ export function ItemCard({ item, showStatus = false }: ItemCardProps) {
       {photoUrl ? (
         <Image
           source={{ uri: photoUrl }}
-          className="mb-3 h-36 w-full rounded-xl bg-slate-100"
+          className="mb-3 h-36 w-full rounded-xl bg-muted"
           resizeMode="cover"
         />
       ) : null}
 
       {item.partialIdentifier ? (
         <View className="mb-1.5 flex-row items-center gap-2">
-          <FileText size={16} color="#1e40af" />
-          <Text className="text-sm font-semibold text-slate-900 tabular-nums">
+          <FileText size={16} color={colors.primary} />
+          <Text className="text-sm font-semibold text-foreground tabular-nums">
             …{item.partialIdentifier}
           </Text>
         </View>
       ) : null}
 
       <View className="mb-1.5 flex-row items-center gap-2">
-        <MapPin size={16} color="#64748b" />
-        <Text className="flex-1 text-sm text-slate-600">
+        <MapPin size={16} color={colors.mutedForeground} />
+        <Text className="flex-1 text-sm text-foreground/60">
           {item.city}
           {item.location ? ` · ${item.location}` : ""}
         </Text>
       </View>
 
       <View className="mb-1.5 flex-row items-center gap-2">
-        <Calendar size={16} color="#64748b" />
-        <Text className="text-sm text-slate-600">{formatDate(item.eventDate)}</Text>
+        <Calendar size={16} color={colors.mutedForeground} />
+        <Text className="text-sm text-foreground/60">{formatDate(item.eventDate)}</Text>
       </View>
 
       {item.description ? (
-        <Text numberOfLines={2} className="mt-1 text-sm text-slate-500">
+        <Text numberOfLines={2} className="mt-1 text-sm text-muted-foreground">
           {item.description}
         </Text>
       ) : null}

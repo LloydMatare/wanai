@@ -5,10 +5,10 @@ type Tone = "primary" | "success" | "danger" | "neutral" | "outline";
 
 const toneClasses: Record<Tone, { bg: string; text: string }> = {
   primary: { bg: "bg-primary/10", text: "text-primary" },
-  success: { bg: "bg-green-100", text: "text-green-700" },
-  danger: { bg: "bg-red-100", text: "text-red-600" },
-  neutral: { bg: "bg-slate-100", text: "text-slate-700" },
-  outline: { bg: "bg-transparent border border-slate-300", text: "text-slate-600" },
+  success: { bg: "bg-success/10", text: "text-success" },
+  danger: { bg: "bg-destructive/10", text: "text-destructive" },
+  neutral: { bg: "bg-muted", text: "text-foreground/70" },
+  outline: { bg: "bg-transparent border border-border", text: "text-foreground/60" },
 };
 
 interface BadgeProps {

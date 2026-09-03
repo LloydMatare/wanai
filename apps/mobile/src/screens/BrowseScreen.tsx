@@ -7,6 +7,7 @@ import {
 } from "react-native";
 import { useQuery } from "convex/react";
 import { api } from "../../lib/convex-api";
+import { colors } from "../lib/theme";
 import { ItemCard, ItemSummary } from "../components/ItemCard";
 import { SegmentedControl } from "../components/ui/SegmentedControl";
 import { Select } from "../components/ui/Select";
@@ -35,10 +36,10 @@ export function BrowseScreen() {
   const hasFilters = city !== "All" || docType !== "all";
 
   return (
-    <View className="flex-1 bg-slate-50">
-      <View className="border-b border-slate-200 bg-white px-4 pb-3 pt-4">
-        <Text className="text-2xl font-bold text-slate-900">Browse</Text>
-        <Text className="mt-1 text-sm text-slate-500">
+    <View className="flex-1 bg-background">
+      <View className="border-b border-border bg-card px-4 pb-3 pt-4">
+        <Text className="text-2xl font-bold text-foreground">Browse</Text>
+        <Text className="mt-1 text-sm text-muted-foreground">
           Reported lost and found documents from across Zimbabwe
         </Text>
       </View>
@@ -55,13 +56,13 @@ export function BrowseScreen() {
 
         <Pressable
           onPress={() => setShowFilters((s) => !s)}
-          className="flex-row items-center justify-between rounded-xl border border-slate-300 bg-white px-4 py-3"
+          className="flex-row items-center justify-between rounded-xl border border-input bg-card px-4 py-3"
         >
           <View className="flex-row items-center gap-2">
-            <Filter size={16} color="#64748b" />
-            <Text className="text-sm font-medium text-slate-700">Filters</Text>
+            <Filter size={16} color={colors.mutedForeground} />
+            <Text className="text-sm font-medium text-foreground/70">Filters</Text>
           </View>
-          <Text className="text-sm text-slate-400">
+          <Text className="text-sm text-muted-foreground">
             {hasFilters ? "Active" : "None"}
           </Text>
         </Pressable>
@@ -89,17 +90,17 @@ export function BrowseScreen() {
 
       {items === undefined ? (
         <View className="flex-1 items-center justify-center gap-3 px-6">
-          <Text className="text-slate-400">Loading documents...</Text>
+          <Text className="text-muted-foreground">Loading documents...</Text>
         </View>
       ) : filtered.length === 0 ? (
         <View className="flex-1 items-center justify-center gap-3 px-8">
           <View className="h-14 w-14 items-center justify-center rounded-2xl bg-primary/10">
-            <PackageSearch size={26} color="#1e40af" />
+            <PackageSearch size={26} color={colors.primary} />
           </View>
-          <Text className="text-center text-lg font-semibold text-slate-800">
+          <Text className="text-center text-lg font-semibold text-foreground">
             No {kind} documents found
           </Text>
-          <Text className="text-center text-sm text-slate-500">
+          <Text className="text-center text-sm text-muted-foreground">
             {hasFilters
               ? "Nothing matches these filters yet. Try widening your search."
               : "Nobody has reported a " + kind + " document yet. Check back soon."}

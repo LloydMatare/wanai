@@ -7,6 +7,7 @@ import {
   View,
 } from "react-native";
 import { ChevronDown } from "lucide-react-native";
+import { colors } from "../../lib/theme";
 
 interface Option {
   value: string;
@@ -33,17 +34,17 @@ export function Select({
 
   return (
     <View className="gap-1.5">
-      <Text className="text-sm font-semibold text-slate-800">{label}</Text>
+      <Text className="text-sm font-semibold text-foreground">{label}</Text>
       <Pressable
         onPress={() => setOpen(true)}
-        className="flex-row items-center justify-between rounded-xl border border-slate-300 bg-white px-4 py-3"
+        className="flex-row items-center justify-between rounded-xl border border-input bg-card px-4 py-3"
       >
         <Text
-          className={`text-base ${selected ? "text-slate-900" : "text-slate-400"}`}
+          className={`text-base ${selected ? "text-foreground" : "text-muted-foreground"}`}
         >
           {selected ? selected.label : placeholder}
         </Text>
-        <ChevronDown size={18} color="#64748b" />
+        <ChevronDown size={18} color={colors.mutedForeground} />
       </Pressable>
 
       <Modal
@@ -56,11 +57,11 @@ export function Select({
           className="flex-1 justify-end bg-black/40"
           onPress={() => setOpen(false)}
         >
-          <Pressable className="rounded-t-3xl bg-white p-4 pb-8">
+          <Pressable className="rounded-t-3xl bg-card p-4 pb-8">
             <View className="mb-4 items-center">
-              <View className="h-1.5 w-12 rounded-full bg-slate-300" />
+              <View className="h-1.5 w-12 rounded-full bg-border" />
             </View>
-            <Text className="mb-3 text-lg font-bold text-slate-900">{label}</Text>
+            <Text className="mb-3 text-lg font-bold text-foreground">{label}</Text>
             <FlatList
               data={options}
               keyExtractor={(item) => item.value}
@@ -75,7 +76,7 @@ export function Select({
                     className={`rounded-xl px-4 py-3 ${active ? "bg-primary/10" : ""}`}
                   >
                     <Text
-                      className={`text-base ${active ? "font-bold text-primary" : "text-slate-800"}`}
+                      className={`text-base ${active ? "font-bold text-primary" : "text-foreground"}`}
                     >
                       {item.label}
                     </Text>

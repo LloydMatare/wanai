@@ -6,6 +6,7 @@ import {
   View,
   ViewStyle,
 } from "react-native";
+import { colors } from "../../lib/theme";
 
 type Variant = "primary" | "secondary" | "outline" | "ghost" | "danger";
 type Size = "sm" | "md" | "lg";
@@ -75,7 +76,7 @@ export function Button({
       className={`flex-row items-center justify-center ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
     >
       {loading ? (
-        <ActivityIndicator color={variant === "outline" ? "#1e40af" : "#fff"} />
+        <ActivityIndicator color={variant === "outline" ? colors.primary : colors.primaryForeground} />
       ) : (
         <View className="flex-row items-center">
           {icon ? <View className="mr-2">{icon}</View> : null}

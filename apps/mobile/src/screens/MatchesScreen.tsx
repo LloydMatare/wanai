@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { useAction, useMutation, useQuery } from "convex/react";
 import { api } from "../../lib/convex-api";
+import { colors } from "../lib/theme";
 import { Button } from "../components/ui/Button";
 import { Badge } from "../components/ui/Badge";
 import { FormField } from "../components/ui/FormField";
@@ -31,27 +32,27 @@ export function MatchesScreen() {
   const rejectMatch = useMutation(api.matches.reject as any);
 
   return (
-    <View className="flex-1 bg-slate-50">
-      <View className="border-b border-slate-200 bg-white px-4 pb-3 pt-4">
-        <Text className="text-2xl font-bold text-slate-900">Matches</Text>
-        <Text className="mt-1 text-sm text-slate-500">
+    <View className="flex-1 bg-background">
+      <View className="border-b border-border bg-card px-4 pb-3 pt-4">
+        <Text className="text-2xl font-bold text-foreground">Matches</Text>
+        <Text className="mt-1 text-sm text-muted-foreground">
           Possible connections between your reports and others
         </Text>
       </View>
 
       {matches === undefined ? (
         <View className="flex-1 items-center justify-center">
-          <Text className="text-slate-400">Loading matches...</Text>
+          <Text className="text-muted-foreground">Loading matches...</Text>
         </View>
       ) : matches.length === 0 ? (
         <View className="flex-1 items-center justify-center gap-3 px-8">
           <View className="h-14 w-14 items-center justify-center rounded-2xl bg-primary/10">
-            <HeartHandshake size={26} color="#1e40af" />
+            <HeartHandshake size={26} color={colors.primary} />
           </View>
-          <Text className="text-center text-lg font-semibold text-slate-800">
+          <Text className="text-center text-lg font-semibold text-foreground">
             No matches yet
           </Text>
-          <Text className="text-center text-sm text-slate-500">
+          <Text className="text-center text-sm text-muted-foreground">
             When we find a possible match for one of your reports, it will appear
             here.
           </Text>
@@ -65,7 +66,7 @@ export function MatchesScreen() {
             const otherItem = item.foundItem || item.lostItem;
 
             return (
-              <View className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+              <View className="rounded-2xl border border-border bg-card p-4 shadow-sm">
                 <View className="flex-row items-center gap-2">
                   <Badge
                     label={matchStatusLabel(item.status)}
@@ -79,21 +80,21 @@ export function MatchesScreen() {
                 </View>
 
                 <View className="mt-3 gap-1">
-                  <Text className="text-sm font-bold text-slate-900">
+                  <Text className="text-sm font-bold text-foreground">
                     {formatDocType(otherItem.documentType)}
                   </Text>
                   <View className="flex-row items-center gap-1.5">
-                    <MapPin size={14} color="#64748b" />
-                    <Text className="text-sm text-slate-600">
+                    <MapPin size={14} color={colors.mutedForeground} />
+                    <Text className="text-sm text-foreground/60">
                       {otherItem.city}
                       {otherItem.location ? ` · ${otherItem.location}` : ""}
                     </Text>
                   </View>
-                  <Text className="text-sm text-slate-500">
+                  <Text className="text-sm text-muted-foreground">
                     {otherItem.eventDate ? formatDate(otherItem.eventDate) : ""}
                   </Text>
                   {otherItem.partialIdentifier ? (
-                    <Text className="text-sm font-medium text-slate-800 tabular-nums">
+                    <Text className="text-sm font-medium text-foreground tabular-nums">
                       …{otherItem.partialIdentifier}
                     </Text>
                   ) : null}
@@ -124,8 +125,8 @@ export function MatchesScreen() {
                     />
                   </View>
                 ) : item.status === "verified" ? (
-                  <View className="mt-3 rounded-xl bg-green-50 p-3">
-                    <Text className="text-sm font-medium text-green-700">
+                  <View className="mt-3 rounded-xl bg-success/10 p-3">
+                    <Text className="text-sm font-medium text-success">
                       Verified! Arrange a handover to reunite the documents.
                     </Text>
                   </View>
@@ -177,19 +178,19 @@ function VerifyModal({ match, onClose }: { match: MatchRow | null; onClose: () =
   return (
     <Modal visible={!!match} transparent animationType="slide" onRequestClose={onClose}>
       <Pressable className="flex-1 justify-end bg-black/40" onPress={onClose}>
-        <Pressable className="rounded-t-3xl bg-white p-5 pb-8">
+        <Pressable className="rounded-t-3xl bg-card p-5 pb-8">
           <View className="mb-4 flex-row items-center justify-between">
-            <Text className="text-lg font-bold text-slate-900">Verify identity</Text>
-            <Pressable onPress={onClose} className="h-9 w-9 items-center justify-center rounded-full bg-slate-100">
-              <X size={18} color="#64748b" />
+            <Text className="text-lg font-bold text-foreground">Verify identity</Text>
+            <Pressable onPress={onClose} className="h-9 w-9 items-center justify-center rounded-full bg-muted">
+              <X size={18} color={colors.mutedForeground} />
             </Pressable>
           </View>
 
           {result && result.success ? (
             <View className="items-center py-6">
-              <PackageSearch size={40} color="#16a34a" />
-              <Text className="mt-3 text-lg font-bold text-green-700">Identity verified</Text>
-              <Text className="mt-1 text-center text-sm text-slate-500">
+              <PackageSearch size={40} color={colors.success} />
+              <Text className="mt-3 text-lg font-bold text-success">Identity verified</Text>
+              <Text className="mt-1 text-center text-sm text-muted-foreground">
                 Ownership confirmed. The document is now marked as claimed.
               </Text>
               <View className="mt-4 w-full">
@@ -198,7 +199,7 @@ function VerifyModal({ match, onClose }: { match: MatchRow | null; onClose: () =
             </View>
           ) : (
             <>
-              <Text className="mb-3 text-sm text-slate-500">
+              <Text className="mb-3 text-sm text-muted-foreground">
                 Enter the full document number (and date of birth if you have it) to
                 confirm this is yours.
               </Text>
@@ -219,8 +220,8 @@ function VerifyModal({ match, onClose }: { match: MatchRow | null; onClose: () =
               </View>
 
               {result && !result.success ? (
-                <View className="mt-3 rounded-xl border border-red-200 bg-red-50 p-3">
-                  <Text className="text-sm text-red-600">
+                <View className="mt-3 rounded-xl border border-destructive/20 bg-destructive/5 p-3">
+                  <Text className="text-sm text-destructive">
                     {result.locked
                       ? "Too many attempts. This case has been locked for admin review."
                       : attemptsLeft !== null

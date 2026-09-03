@@ -3,6 +3,7 @@
     "name": "Wanai",
     "slug": "wanai-mobile",
     "version": "1.0.0",
+    "scheme": "wanai",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
@@ -23,8 +24,12 @@
         }
       ],
       "expo-asset",
-      "expo-font"
+      "expo-font",
+      "expo-router"
     ],
+    "experiments": {
+      "typedRoutes": true
+    },
     "extra": {
       "eas": {
         "projectId": "wanai-lost-found"

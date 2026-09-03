@@ -1,27 +1,58 @@
 import React, { useState } from "react";
-import { KeyboardAvoidingView, Platform, ScrollView, Text, View } from "react-native";
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
 import { useSignIn, useSignUp } from "@clerk/clerk-expo";
+import { FileText, ShieldCheck } from "lucide-react-native";
+import { colors } from "../lib/theme";
 import { Button } from "../components/ui/Button";
 import { FormField } from "../components/ui/FormField";
 import { SegmentedControl } from "../components/ui/SegmentedControl";
 
 export function AuthScreen() {
   return (
-    <ScrollView
-      className="flex-1 bg-slate-50"
-      contentContainerClassName="p-5 pb-10"
-      keyboardShouldPersistTaps="handled"
-    >
-      <View className="mt-10 items-center">
-        <Text className="text-3xl font-bold text-primary">Wanai</Text>
-        <Text className="mt-1 text-sm text-slate-500">
-          Find lost documents in Zimbabwe
-        </Text>
-      </View>
-      <View className="mt-8">
-        <AuthForm />
-      </View>
-    </ScrollView>
+    <View className="flex-1 bg-background">
+      <KeyboardAvoidingView
+        className="flex-1"
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <ScrollView
+          contentContainerClassName=" flexGrow-1 justify-center px-5 py-10"
+          keyboardShouldPersistTaps="handled"
+        >
+          <View className="items-center gap-3 pb-8">
+            <View className="h-16 w-16 items-center justify-center rounded-2xl bg-primary/10">
+              <FileText size={32} color={colors.primary} />
+            </View>
+            <View className="items-center gap-1">
+              <Text className="text-3xl font-bold tracking-tight text-foreground">
+                Wanai
+              </Text>
+              <Text className="text-sm text-muted-foreground">
+                Find lost documents in Zimbabwe
+              </Text>
+            </View>
+          </View>
+
+          <View className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+            <AuthForm />
+          </View>
+
+          <View className="mt-8 items-center gap-3">
+            <View className="flex-row items-center gap-2">
+              <ShieldCheck size={14} color={colors.mutedForeground} />
+              <Text className="text-xs text-muted-foreground">
+                Your data is encrypted and secure
+              </Text>
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </View>
   );
 }
 
@@ -87,11 +118,13 @@ function AuthForm() {
 
   if (pendingVerification) {
     return (
-      <View className="mt-4 gap-4">
-        <Text className="text-lg font-bold text-slate-900">Verify your email</Text>
-        <Text className="text-sm text-slate-500">
-          We sent a code to {email}. Enter it below to finish creating your account.
-        </Text>
+      <View className="gap-4">
+        <View className="items-center gap-2">
+          <Text className="text-xl font-bold text-foreground">Verify your email</Text>
+          <Text className="text-center text-sm text-muted-foreground">
+            We sent a code to {email}. Enter it below to finish creating your account.
+          </Text>
+        </View>
         <FormField
           label="Verification code"
           placeholder="Enter the 6-digit code"
@@ -106,7 +139,18 @@ function AuthForm() {
   }
 
   return (
-    <View className="mt-4 gap-4">
+    <View className="gap-4">
+      <View className="items-center">
+        <Text className="text-lg font-bold text-foreground">
+          {mode === "signin" ? "Welcome back" : "Create your account"}
+        </Text>
+        <Text className="mt-1 text-sm text-muted-foreground">
+          {mode === "signin"
+            ? "Sign in to access your reports and matches"
+            : "Join Wanai to help reunite lost documents"}
+        </Text>
+      </View>
+
       <SegmentedControl
         value={mode}
         onChange={(v) => {
@@ -119,27 +163,29 @@ function AuthForm() {
         ]}
       />
 
-      {mode === "signup" ? (
-        <FormField label="Your name" placeholder="Full name" value={name} onChangeText={setName} autoCapitalize="words" />
-      ) : null}
+      <View className="gap-3">
+        {mode === "signup" ? (
+          <FormField label="Your name" placeholder="Full name" value={name} onChangeText={setName} autoCapitalize="words" />
+        ) : null}
 
-      <FormField
-        label="Email"
-        placeholder="you@example.com"
-        keyboardType="email-address"
-        autoCapitalize="none"
-        autoCorrect={false}
-        value={email}
-        onChangeText={setEmail}
-      />
+        <FormField
+          label="Email"
+          placeholder="you@example.com"
+          keyboardType="email-address"
+          autoCapitalize="none"
+          autoCorrect={false}
+          value={email}
+          onChangeText={setEmail}
+        />
 
-      <FormField
-        label="Password"
-        placeholder="At least 8 characters"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-      />
+        <FormField
+          label="Password"
+          placeholder="At least 8 characters"
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
+        />
+      </View>
 
       {error ? <ErrorBanner message={error} /> : null}
 
@@ -154,8 +200,8 @@ function AuthForm() {
 
 function ErrorBanner({ message }: { message: string }) {
   return (
-    <View className="rounded-xl border border-red-200 bg-red-50 p-3">
-      <Text className="text-sm text-red-600">{message}</Text>
+    <View className="rounded-xl border border-destructive/20 bg-destructive/5 p-3">
+      <Text className="text-sm text-destructive">{message}</Text>
     </View>
   );
 }
