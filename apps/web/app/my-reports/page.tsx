@@ -7,8 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Reveal } from "@/components/motion/reveal";
-import { Calendar, FileText, Inbox, MapPin, PlusCircle } from "lucide-react";
-import { SignedIn, SignedOut } from "@clerk/nextjs";
+import { Calendar, FileText, MapPin, PlusCircle } from "lucide-react";
 import Link from "next/link";
 
 const DOCUMENT_LABELS: Record<string, string> = {
@@ -94,81 +93,58 @@ export default function MyReportsPage() {
 
   return (
     <main>
-      <SignedOut>
-        <div className="container mx-auto px-4 py-20">
-          <Card variant="glass" className="mx-auto max-w-md text-center">
-            <CardHeader>
-              <span className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                <Inbox className="h-5 w-5" />
+      <section className="relative overflow-hidden border-b bg-gradient-subtle px-4 py-14">
+        <div className="bg-grid bg-grid-fade absolute inset-0 opacity-60" />
+        <div className="container relative mx-auto flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+              My <span className="text-gradient">reports</span>
+            </h1>
+            <p className="mt-3 text-muted-foreground">
+              Everything you&apos;ve reported as lost or found.
+            </p>
+          </div>
+          <Button asChild variant="gradient">
+            <Link href="/report">
+              <PlusCircle />
+              New report
+            </Link>
+          </Button>
+        </div>
+      </section>
+
+      <div className="container mx-auto px-4 py-8">
+        {myItems === undefined ? (
+          <ReportsSkeleton />
+        ) : myItems.length === 0 ? (
+          <Card variant="glass" className="py-16 text-center">
+            <CardContent className="flex flex-col items-center">
+              <span className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                <FileText className="h-6 w-6" />
               </span>
-              <CardTitle>Sign in required</CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-4">
-              <p className="text-sm text-muted-foreground">
-                Sign in to see the documents you&apos;ve reported.
+              <h3 className="text-lg font-semibold">No reports yet</h3>
+              <p className="mt-2 max-w-sm text-sm text-muted-foreground">
+                You haven&apos;t reported any lost or found documents. It only takes a minute.
               </p>
-              <Button asChild variant="gradient" className="w-full">
-                <Link href="/sign-in">Sign in</Link>
+              <Button asChild variant="gradient" className="mt-6">
+                <Link href="/report">
+                  <PlusCircle />
+                  Report a document
+                </Link>
               </Button>
             </CardContent>
           </Card>
-        </div>
-      </SignedOut>
-
-      <SignedIn>
-        <section className="relative overflow-hidden border-b bg-gradient-subtle px-4 py-14">
-          <div className="bg-grid bg-grid-fade absolute inset-0 opacity-60" />
-          <div className="container relative mx-auto flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-                My <span className="text-gradient">reports</span>
-              </h1>
-              <p className="mt-3 text-muted-foreground">
-                Everything you&apos;ve reported as lost or found.
-              </p>
-            </div>
-            <Button asChild variant="gradient">
-              <Link href="/report">
-                <PlusCircle />
-                New report
-              </Link>
-            </Button>
-          </div>
-        </section>
-
-        <div className="container mx-auto px-4 py-8">
-          {myItems === undefined ? (
-            <ReportsSkeleton />
-          ) : myItems.length === 0 ? (
-            <Card variant="glass" className="py-16 text-center">
-              <CardContent className="flex flex-col items-center">
-                <span className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                  <FileText className="h-6 w-6" />
-                </span>
-                <h3 className="text-lg font-semibold">No reports yet</h3>
-                <p className="mt-2 max-w-sm text-sm text-muted-foreground">
-                  You haven&apos;t reported any lost or found documents. It only takes a minute.
-                </p>
-                <Button asChild variant="gradient" className="mt-6">
-                  <Link href="/report">
-                    <PlusCircle />
-                    Report a document
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
-          ) : (
-            <Reveal
-              stagger={0.06}
-              className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3"
-            >
-              {myItems.map((item: any) => (
-                <ItemCard key={item._id} item={item} />
-              ))}
-            </Reveal>
-          )}
-        </div>
-      </SignedIn>
+        ) : (
+          <Reveal
+            stagger={0.06}
+            className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3"
+          >
+            {myItems.map((item: any) => (
+              <ItemCard key={item._id} item={item} />
+            ))}
+          </Reveal>
+        )}
+      </div>
     </main>
   );
 }

@@ -1,31 +1,13 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { FlatList, Text, View } from "react-native";
-import { useUser } from "@clerk/clerk-expo";
-import { useMutation, useQuery } from "convex/react";
+import { useQuery } from "convex/react";
 import { api } from "../../lib/convex-api";
 import { colors } from "../lib/theme";
-import { Button } from "../components/ui/Button";
 import { ItemCard, ItemSummary } from "../components/ItemCard";
-import { LogOut, User as UserIcon, FileText } from "lucide-react-native";
+import { User as UserIcon, FileText } from "lucide-react-native";
 
-interface ProfileScreenProps {
-  onSignOut: () => Promise<void>;
-}
-
-export function ProfileScreen({ onSignOut }: ProfileScreenProps) {
-  const { user, isLoaded } = useUser();
-  const me = useQuery(api.users.me as any);
+export function ProfileScreen() {
   const myItems = useQuery(api.items.getMyItems);
-
-  // Ensure a Convex user row exists after the Clerk identity resolves.
-  const createOrUpdateUser = useMutation(api.users.createOrUpdateUser as any);
-  useEffect(() => {
-    if (!user) return;
-    createOrUpdateUser({
-      name: user.fullName || user.primaryEmailAddress?.emailAddress || "Wanai user",
-      avatarUrl: user.imageUrl || undefined,
-    });
-  }, [user, createOrUpdateUser]);
 
   return (
     <View className="flex-1 bg-background">
@@ -44,16 +26,8 @@ export function ProfileScreen({ onSignOut }: ProfileScreenProps) {
                 <UserIcon size={36} color={colors.primary} />
               </View>
               <Text className="mt-3 text-lg font-bold text-foreground">
-                {isLoaded && user ? user.fullName || "Wanai user" : "…"}
+                Wanai user
               </Text>
-              <Text className="text-sm text-muted-foreground">
-                {user?.primaryEmailAddress?.emailAddress || "Signed in"}
-              </Text>
-              {me?.role === "admin" ? (
-                <Text className="mt-2 text-sm font-medium text-success">
-                  Admin account
-                </Text>
-              ) : null}
             </View>
 
             <Text className="mt-2 mb-2 text-lg font-bold text-foreground">
@@ -67,16 +41,6 @@ export function ProfileScreen({ onSignOut }: ProfileScreenProps) {
             <Text className="text-center text-sm text-muted-foreground">
               No reports yet. Report a lost or found document to get started.
             </Text>
-          </View>
-        }
-        ListFooterComponent={
-          <View className="mt-4 gap-3">
-            <Button
-              title="Sign out"
-              variant="danger"
-              onPress={() => onSignOut()}
-              icon={<LogOut size={16} color={colors.destructiveForeground} />}
-            />
           </View>
         }
         renderItem={({ item }) => <View className="mb-3"><ItemCard item={item} showStatus /></View>}

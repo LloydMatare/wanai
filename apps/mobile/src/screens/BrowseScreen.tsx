@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import {
   FlatList,
-  Pressable,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 import { useQuery } from "convex/react";
@@ -54,7 +54,8 @@ export function BrowseScreen() {
           ]}
         />
 
-        <Pressable
+        <TouchableOpacity
+          activeOpacity={0.7}
           onPress={() => setShowFilters((s) => !s)}
           className="flex-row items-center justify-between rounded-xl border border-input bg-card px-4 py-3"
         >
@@ -65,7 +66,7 @@ export function BrowseScreen() {
           <Text className="text-sm text-muted-foreground">
             {hasFilters ? "Active" : "None"}
           </Text>
-        </Pressable>
+        </TouchableOpacity>
 
         {showFilters ? (
           <View className="gap-3">

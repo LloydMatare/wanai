@@ -11,7 +11,6 @@
 import type * as items from "../items.js";
 import type * as matches from "../matches.js";
 import type * as notifications from "../notifications.js";
-import type * as users from "../users.js";
 import type * as verification from "../verification.js";
 import type * as verificationInternal from "../verificationInternal.js";
 
@@ -25,7 +24,6 @@ declare const fullApi: ApiFromModules<{
   items: typeof items;
   matches: typeof matches;
   notifications: typeof notifications;
-  users: typeof users;
   verification: typeof verification;
   verificationInternal: typeof verificationInternal;
 }>;

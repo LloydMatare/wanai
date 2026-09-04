@@ -3,7 +3,6 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useAuth, UserButton, SignInButton, SignedIn, SignedOut } from "@clerk/nextjs";
 import { Menu, PlusCircle, Search, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -18,16 +17,13 @@ import {
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
-type NavLink = { href: string; label: string; authOnly?: boolean };
-
-const NAV_LINKS: NavLink[] = [
+const NAV_LINKS = [
   { href: "/browse", label: "Browse found" },
-  { href: "/report", label: "Report", authOnly: true },
-  { href: "/my-reports", label: "My reports", authOnly: true },
-];
+  { href: "/report", label: "Report" },
+  { href: "/my-reports", label: "My reports" },
+] as const;
 
 export function Navbar() {
-  const { userId } = useAuth();
   const pathname = usePathname();
   const [scrolled, setScrolled] = React.useState(false);
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -40,7 +36,6 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const visibleLinks = NAV_LINKS.filter((link) => !link.authOnly || userId);
   const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
   return (
@@ -66,7 +61,7 @@ export function Navbar() {
         </Link>
 
         <nav className="hidden items-center gap-1 md:flex">
-          {visibleLinks.map((link) => (
+          {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
               href={link.href}
@@ -88,28 +83,12 @@ export function Navbar() {
         <div className="ml-auto flex items-center gap-2">
           <ThemeToggle />
 
-          <SignedOut>
-            <SignInButton mode="modal">
-              <Button variant="ghost" size="sm" className="hidden sm:inline-flex">
-                Sign in
-              </Button>
-            </SignInButton>
-            <SignInButton mode="modal">
-              <Button variant="gradient" size="sm">
-                Get started
-              </Button>
-            </SignInButton>
-          </SignedOut>
-
-          <SignedIn>
-            <Button asChild variant="outline" size="sm" className="hidden sm:inline-flex">
-              <Link href="/report">
-                <PlusCircle />
-                Report
-              </Link>
-            </Button>
-            <UserButton afterSignOutUrl="/" />
-          </SignedIn>
+          <Button asChild variant="outline" size="sm" className="hidden sm:inline-flex">
+            <Link href="/report">
+              <PlusCircle />
+              Report
+            </Link>
+          </Button>
 
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
             <SheetTrigger asChild>
@@ -130,7 +109,7 @@ export function Navbar() {
               <Separator className="my-6" />
 
               <nav className="flex flex-col gap-1">
-                {visibleLinks.map((link) => (
+                {NAV_LINKS.map((link) => (
                   <SheetClose asChild key={link.href}>
                     <Link
                       href={link.href}

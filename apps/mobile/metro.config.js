@@ -1,7 +1,5 @@
-// Metro config for the mobile app in a monorepo.
-// The app shares the Convex backend (convex/) and generated types at the repo
-// root, so Metro must watch the monorepo root and resolve modules/nodes from it.
 const { getDefaultConfig } = require("expo/metro-config");
+const { withNativeWind } = require("nativewind/metro");
 const path = require("path");
 
 const projectRoot = __dirname;
@@ -15,4 +13,4 @@ config.resolver.nodeModulesPaths = [
   path.resolve(workspaceRoot, "node_modules"),
 ];
 
-module.exports = config;
+module.exports = withNativeWind(config, { input: "./global.css" });

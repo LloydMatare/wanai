@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { SignedIn, SignedOut } from "@clerk/nextjs";
 import { ArrowRight, PlusCircle, Search, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -87,26 +86,14 @@ export function Hero() {
           data-hero-item
           className="will-reveal mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row"
         >
-          <SignedOut>
-            <Magnetic>
-              <Button asChild size="lg" variant="gradient">
-                <Link href="/sign-in">
-                  Get started
-                  <ArrowRight className="transition-transform duration-200 group-hover:translate-x-0.5" />
-                </Link>
-              </Button>
-            </Magnetic>
-          </SignedOut>
-          <SignedIn>
-            <Magnetic>
-              <Button asChild size="lg" variant="gradient">
-                <Link href="/report">
-                  <PlusCircle />
-                  Report a document
-                </Link>
-              </Button>
-            </Magnetic>
-          </SignedIn>
+          <Magnetic>
+            <Button asChild size="lg" variant="gradient">
+              <Link href="/report">
+                <PlusCircle />
+                Report a document
+              </Link>
+            </Button>
+          </Magnetic>
 
           <Button asChild size="lg" variant="glass">
             <Link href="/browse">

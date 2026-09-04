@@ -2,22 +2,14 @@ import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 export default defineSchema({
-  users: defineTable({
-    clerkId: v.string(),
-    name: v.string(),
-    phone: v.optional(v.string()),
-    avatarUrl: v.optional(v.string()),
-    role: v.union(v.literal("user"), v.literal("admin")),
-  }).index("by_clerk_id", ["clerkId"]),
-
   items: defineTable({
-    reporterId: v.id("users"),
+    reporterId: v.optional(v.string()),
     kind: v.union(v.literal("lost"), v.literal("found")),
-    documentType: v.string(), // e.g., "national_id", "drivers_license"
+    documentType: v.string(),
     country: v.string(),
     city: v.string(),
     location: v.string(),
-    partialIdentifier: v.string(), // Last 4 chars
+    partialIdentifier: v.string(),
     description: v.string(),
     eventDate: v.number(),
     photoStorageId: v.optional(v.id("_storage")),
@@ -55,7 +47,7 @@ export default defineSchema({
   }).index("by_status", ["status"]),
 
   notifications: defineTable({
-    userId: v.id("users"),
+    userId: v.optional(v.string()),
     type: v.string(),
     itemId: v.optional(v.id("items")),
     matchId: v.optional(v.id("matches")),

@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { SignedIn, SignedOut } from "@clerk/nextjs";
 import {
   ArrowRight,
   BellRing,
@@ -190,22 +189,12 @@ export default function HomePage() {
               </p>
               <div className="mt-10 flex justify-center">
                 <Magnetic>
-                  <SignedOut>
-                    <Button asChild size="lg" variant="secondary">
-                      <Link href="/sign-in">
-                        Sign in to report
-                        <ArrowRight className="transition-transform duration-200 group-hover:translate-x-0.5" />
-                      </Link>
-                    </Button>
-                  </SignedOut>
-                  <SignedIn>
-                    <Button asChild size="lg" variant="secondary">
-                      <Link href="/report">
-                        <PlusCircle />
-                        Report now
-                      </Link>
-                    </Button>
-                  </SignedIn>
+                  <Button asChild size="lg" variant="secondary">
+                    <Link href="/report">
+                      <PlusCircle />
+                      Report now
+                    </Link>
+                  </Button>
                 </Magnetic>
               </div>
             </div>

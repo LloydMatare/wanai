@@ -1,5 +1,5 @@
 import React from "react";
-import { Pressable, Text, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 
 interface SegmentedOption {
   value: string;
@@ -22,8 +22,9 @@ export function SegmentedControl({
       {options.map((opt) => {
         const active = opt.value === value;
         return (
-          <Pressable
+          <TouchableOpacity
             key={opt.value}
+            activeOpacity={0.7}
             onPress={() => onChange(opt.value)}
             className={`flex-1 rounded-lg py-2.5 ${active ? "bg-card shadow-sm" : ""}`}
           >
@@ -34,7 +35,7 @@ export function SegmentedControl({
             >
               {opt.label}
             </Text>
-          </Pressable>
+          </TouchableOpacity>
         );
       })}
     </View>
