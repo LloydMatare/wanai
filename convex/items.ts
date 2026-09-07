@@ -2,7 +2,6 @@ import { internalMutation, mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { internal } from "./_generated/api";
 
-// Document types for Zimbabwe
 export const DOCUMENT_TYPES = [
   { value: "national_id", label: "National ID" },
   { value: "drivers_license", label: "Driver's License" },
@@ -11,7 +10,6 @@ export const DOCUMENT_TYPES = [
   { value: "other", label: "Other" },
 ] as const;
 
-// Zimbabwe cities
 export const ZIMBABWE_CITIES = [
   "Harare",
   "Bulawayo",
@@ -44,14 +42,6 @@ export const getItemById = query({
   },
 });
 
-/** Resolves a stored document photo to a public URL (or null if absent). */
-export const getPhotoUrl = query({
-  args: { storageId: v.id("_storage") },
-  handler: async (ctx, args) => {
-    return await ctx.storage.getUrl(args.storageId);
-  },
-});
-
 export const reportLost = mutation({
   args: {
     documentType: v.string(),
@@ -62,16 +52,18 @@ export const reportLost = mutation({
     eventDate: v.number(),
     fullDocumentNumber: v.string(),
     dateOfBirth: v.optional(v.string()),
-    photo: v.optional(v.id("_storage")),
+    phone: v.optional(v.string()),
+    photoUrl: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const { fullDocumentNumber, dateOfBirth, photo, ...itemData } = args;
+    const { fullDocumentNumber, dateOfBirth, photoUrl, phone, ...itemData } = args;
 
     const itemId = await ctx.db.insert("items", {
       kind: "lost",
       ...itemData,
       country: "Zimbabwe",
-      photoStorageId: photo,
+      phone: phone || undefined,
+      photoUrl: photoUrl || undefined,
       status: "open",
     });
 
@@ -96,15 +88,18 @@ export const reportFound = mutation({
     partialIdentifier: v.string(),
     description: v.string(),
     eventDate: v.number(),
-    photo: v.optional(v.id("_storage")),
+    phone: v.optional(v.string()),
+    photoUrl: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    const { photoUrl, phone, ...rest } = args;
     const itemId = await ctx.db.insert("items", {
       kind: "found",
       country: "Zimbabwe",
-      photoStorageId: args.photo,
+      phone: phone || undefined,
+      photoUrl: photoUrl || undefined,
       status: "open",
-      ...args,
+      ...rest,
     });
 
     await ctx.scheduler.runAfter(0, internal.matches.findCandidates, { itemId });

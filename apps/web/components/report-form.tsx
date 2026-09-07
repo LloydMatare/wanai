@@ -10,7 +10,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Upload, AlertCircle, CheckCircle } from "lucide-react";
+import { Loader2, Upload, AlertCircle, CheckCircle, ImageIcon } from "lucide-react";
+import { UploadButton } from "@/lib/uploadthing";
+import Image from "next/image";
 
 const DOCUMENT_TYPES = [
   { value: "national_id", label: "National ID" },
@@ -45,6 +47,7 @@ export function ReportForm({ type }: ReportFormProps) {
     // Only for lost items
     fullDocumentNumber: "",
     dateOfBirth: "",
+    phone: "",
   });
 
   const reportLost = useMutation(api.items.reportLost);
@@ -63,11 +66,13 @@ export function ReportForm({ type }: ReportFormProps) {
           documentType: formData.documentType,
           city: formData.city,
           location: formData.location,
-          partialIdentifier: formData.partialIdentifier.slice(-4), // Only last 4 chars
+          partialIdentifier: formData.partialIdentifier.slice(-4),
           description: formData.description,
           eventDate: eventTimestamp,
           fullDocumentNumber: formData.fullDocumentNumber,
           dateOfBirth: formData.dateOfBirth || undefined,
+          phone: formData.phone || undefined,
+          photoUrl: photoUrl || undefined,
         });
       } else {
         await reportFound({
@@ -77,6 +82,8 @@ export function ReportForm({ type }: ReportFormProps) {
           partialIdentifier: formData.partialIdentifier.slice(-4),
           description: formData.description,
           eventDate: eventTimestamp,
+          phone: formData.phone || undefined,
+          photoUrl: photoUrl || undefined,
         });
       }
 
@@ -116,7 +123,9 @@ export function ReportForm({ type }: ReportFormProps) {
                 eventDate: new Date().toISOString().split("T")[0],
                 fullDocumentNumber: "",
                 dateOfBirth: "",
+                phone: "",
               });
+              setPhotoUrl(null);
             }}
           >
             Submit another report
@@ -245,6 +254,59 @@ export function ReportForm({ type }: ReportFormProps) {
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               rows={3}
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="phone">Phone number</Label>
+            <Input
+              id="phone"
+              type="tel"
+              placeholder="+263 77 123 4567"
+              value={formData.phone}
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+            />
+            <p className="text-xs text-muted-foreground">
+              So people who find your document can reach you.
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Photo of document</Label>
+            {photoUrl ? (
+              <div className="relative overflow-hidden rounded-xl border border-border">
+                <Image
+                  src={photoUrl}
+                  alt="Uploaded document"
+                  width={400}
+                  height={200}
+                  className="h-48 w-full object-cover"
+                />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-2 top-2 bg-background/80 backdrop-blur"
+                  onClick={() => setPhotoUrl(null)}
+                >
+                  Remove
+                </Button>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center rounded-xl border-2 border-dashed border-border p-6 text-center">
+                <ImageIcon className="mb-2 h-8 w-8 text-muted-foreground" />
+                <p className="mb-3 text-sm text-muted-foreground">
+                  Upload a photo of the document to help with identification
+                </p>
+                <UploadButton
+                  endpoint="imageUploader"
+                  onClientUploadComplete={(res: { ufsUrl: string }[]) => {
+                    if (res?.[0]?.ufsUrl) setPhotoUrl(res[0].ufsUrl);
+                  }}
+                  onUploadError={(error: Error) => {
+                    setError(error.message);
+                  }}
+                />
+              </div>
+            )}
           </div>
 
           {type === "lost" && (

@@ -140,7 +140,9 @@ export default function MyReportsPage() {
             className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3"
           >
             {myItems.map((item: any) => (
-              <ItemCard key={item._id} item={item} />
+              <Link key={item._id} href={`/browse/${item._id}`} className="h-full">
+                <ItemCard item={item} />
+              </Link>
             ))}
           </Reveal>
         )}

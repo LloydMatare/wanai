@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Reveal } from "@/components/motion/reveal";
 import { Calendar, FileText, MapPin, PackageSearch, SlidersHorizontal } from "lucide-react";
+import Link from "next/link";
 
 const DOCUMENT_LABELS: Record<string, string> = {
   national_id: "National ID",
@@ -31,6 +32,13 @@ function ItemCard({ item }: { item: any }) {
 
   return (
     <Card variant="interactive" className="h-full">
+      {item.photoUrl && (
+        <img
+          src={item.photoUrl}
+          alt="Document photo"
+          className="h-40 w-full rounded-t-xl object-cover"
+        />
+      )}
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between gap-2">
           <Badge variant={item.kind === "found" ? "success" : "secondary"}>
@@ -158,7 +166,9 @@ export default function BrowsePage() {
         className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3"
       >
         {filtered.map((item) => (
-          <ItemCard key={item._id} item={item} />
+          <Link key={item._id} href={`/browse/${item._id}`} className="h-full">
+            <ItemCard item={item} />
+          </Link>
         ))}
       </Reveal>
     );

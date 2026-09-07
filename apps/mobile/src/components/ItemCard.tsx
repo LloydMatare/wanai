@@ -1,8 +1,7 @@
 import React from "react";
 import { Image, Text, View } from "react-native";
-import { useQuery } from "convex/react";
-import { MapPin, Calendar, FileText, ShieldAlert } from "lucide-react-native";
-import { api } from "../../lib/convex-api";
+import { useRouter } from "expo-router";
+import { MapPin, Calendar, FileText } from "lucide-react-native";
 import { colors } from "../lib/theme";
 import { Badge } from "./ui/Badge";
 import {
@@ -20,9 +19,10 @@ export interface ItemSummary {
   partialIdentifier: string;
   description: string;
   eventDate: number;
-  photoStorageId?: string | null;
+  photoUrl?: string | null;
   status: string;
   reporterId: string;
+  phone?: string | null;
 }
 
 interface ItemCardProps {
@@ -31,13 +31,15 @@ interface ItemCardProps {
 }
 
 export function ItemCard({ item, showStatus = false }: ItemCardProps) {
-  const photoUrl = useQuery(
-    api.items.getPhotoUrl,
-    item.photoStorageId ? { storageId: item.photoStorageId as any } : "skip"
-  );
+  const router = useRouter();
 
   return (
-    <View className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+    <View
+      accessible
+      accessibilityRole="button"
+      onTouchEnd={() => router.push(`/item/${item._id}`)}
+      className="rounded-2xl border border-border bg-card p-4 shadow-sm"
+    >
       <View className="mb-2 flex-row items-center gap-2">
         <Badge
           label={item.kind === "found" ? "Found" : "Lost"}
@@ -54,9 +56,9 @@ export function ItemCard({ item, showStatus = false }: ItemCardProps) {
         </View>
       </View>
 
-      {photoUrl ? (
+      {item.photoUrl ? (
         <Image
-          source={{ uri: photoUrl }}
+          source={{ uri: item.photoUrl }}
           className="mb-3 h-36 w-full rounded-xl bg-muted"
           resizeMode="cover"
         />

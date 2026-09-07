@@ -12,7 +12,8 @@ export default defineSchema({
     partialIdentifier: v.string(),
     description: v.string(),
     eventDate: v.number(),
-    photoStorageId: v.optional(v.id("_storage")),
+    phone: v.optional(v.string()),
+    photoUrl: v.optional(v.string()),
     status: v.union(
       v.literal("open"),
       v.literal("matched"),

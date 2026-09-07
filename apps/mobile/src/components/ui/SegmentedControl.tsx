@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 interface SegmentedOption {
   value: string;
@@ -26,7 +26,10 @@ export function SegmentedControl({
             key={opt.value}
             activeOpacity={0.7}
             onPress={() => onChange(opt.value)}
-            className={`flex-1 rounded-lg py-2.5 ${active ? "bg-card shadow-sm" : ""}`}
+            style={[
+              styles.base,
+              active ? styles.active : styles.inactive,
+            ]}
           >
             <Text
               className={`text-center text-sm font-semibold ${
@@ -41,3 +44,22 @@ export function SegmentedControl({
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  base: {
+    flex: 1,
+    borderRadius: 8,
+    paddingVertical: 10,
+  },
+  active: {
+    backgroundColor: "#ffffff",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  inactive: {
+    backgroundColor: "transparent",
+  },
+});

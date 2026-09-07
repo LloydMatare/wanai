@@ -7,7 +7,6 @@ import {
   Text,
   View,
 } from "react-native";
-import * as ImagePicker from "expo-image-picker";
 import { useMutation } from "convex/react";
 import { api } from "../../lib/convex-api";
 import { colors } from "../lib/theme";
@@ -15,15 +14,16 @@ import { Button } from "../components/ui/Button";
 import { FormField } from "../components/ui/FormField";
 import { Select } from "../components/ui/Select";
 import { SegmentedControl } from "../components/ui/SegmentedControl";
-import { Camera, CheckCircle, Trash2 } from "lucide-react-native";
+import { Camera, CheckCircle, Trash2, Loader2 } from "lucide-react-native";
 import { CITIES, DOCUMENT_TYPES } from "../lib/constants";
+import { useImageUploader } from "../lib/uploadthing";
 
 export function ReportScreen() {
   const [kind, setKind] = useState<"lost" | "found">("found");
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [photoUri, setPhotoUri] = useState<string | null>(null);
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
 
   const [form, setForm] = useState({
     documentType: "",
@@ -34,53 +34,33 @@ export function ReportScreen() {
     eventDate: new Date().toISOString().split("T")[0],
     fullDocumentNumber: "",
     dateOfBirth: "",
+    phone: "",
   });
 
   const reportLost = useMutation(api.items.reportLost as any);
   const reportFound = useMutation(api.items.reportFound as any);
-  const generateUploadUrl = useMutation((api as any).storage.generateUploadUrl);
 
-  const pickPhoto = async () => {
-    const perm = await ImagePicker.requestCameraPermissionsAsync();
-    let result;
-    if (perm.granted) {
-      result = await ImagePicker.launchCameraAsync({
-        quality: 0.7,
-        allowsEditing: true,
-        aspect: [4, 3],
-      });
-    } else {
-      const library = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (!library.granted) {
-        Alert.alert("Permission needed", "Allow photo access to attach a document photo.");
-        return;
+  const { openImagePicker, isUploading } = useImageUploader("imageUploader", {
+    onClientUploadComplete: (res) => {
+      if (res?.[0]?.ufsUrl) {
+        setPhotoUrl(res[0].ufsUrl);
       }
-      result = await ImagePicker.launchImageLibraryAsync({
-        quality: 0.7,
-        allowsEditing: true,
-        aspect: [4, 3],
-      });
-    }
-    if (!result.canceled && result.assets[0]) {
-      setPhotoUri(result.assets[0].uri);
-    }
-  };
+    },
+    onUploadError: (err) => {
+      setError(err.message || "Photo upload failed");
+    },
+  });
 
-  const uploadPhoto = async (): Promise<string | undefined> => {
-    if (!photoUri) return undefined;
-    const url = await generateUploadUrl();
-    const response = await fetch(photoUri);
-    const blob = await response.blob();
-    const result = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": blob.type || "image/jpeg" },
-      body: blob,
+  const pickPhoto = () => {
+    openImagePicker({
+      source: "library",
+      onInsufficientPermissions: () => {
+        Alert.alert(
+          "Permission needed",
+          "Allow photo access to attach a document photo.",
+        );
+      },
     });
-    if (!result.ok) {
-      throw new Error("Photo upload failed");
-    }
-    const { storageId } = await result.json();
-    return storageId;
   };
 
   const handleSubmit = async () => {
@@ -96,7 +76,6 @@ export function ReportScreen() {
     setSubmitting(true);
     setError(null);
     try {
-      const photoStorageId = await uploadPhoto();
       const eventDate = new Date(form.eventDate).getTime();
       const partialIdentifier = form.partialIdentifier.slice(-4).toUpperCase();
 
@@ -110,7 +89,8 @@ export function ReportScreen() {
           eventDate,
           fullDocumentNumber: form.fullDocumentNumber,
           dateOfBirth: form.dateOfBirth || undefined,
-          photo: photoStorageId,
+          phone: form.phone || undefined,
+          photoUrl: photoUrl || undefined,
         });
       } else {
         await reportFound({
@@ -120,7 +100,8 @@ export function ReportScreen() {
           partialIdentifier,
           description: form.description,
           eventDate,
-          photo: photoStorageId,
+          phone: form.phone || undefined,
+          photoUrl: photoUrl || undefined,
         });
       }
       setSubmitted(true);
@@ -150,7 +131,7 @@ export function ReportScreen() {
             variant="outline"
             onPress={() => {
               setSubmitted(false);
-              setPhotoUri(null);
+              setPhotoUrl(null);
               setForm({
                 documentType: "",
                 city: "",
@@ -160,6 +141,7 @@ export function ReportScreen() {
                 eventDate: new Date().toISOString().split("T")[0],
                 fullDocumentNumber: "",
                 dateOfBirth: "",
+                phone: "",
               });
             }}
           />
@@ -247,6 +229,15 @@ export function ReportScreen() {
           containerClassName="min-h-[90px]"
         />
 
+        <FormField
+          label="Phone number"
+          placeholder="+263 77 123 4567"
+          keyboardType="phone-pad"
+          value={form.phone}
+          onChangeText={(v) => set("phone", v)}
+          hint="So people who find your document can reach you."
+        />
+
         {kind === "lost" ? (
           <>
             <FormField
@@ -265,20 +256,20 @@ export function ReportScreen() {
           </>
         ) : null}
 
-        {/* Photo attach */}
+        {/* Photo upload */}
         <View className="gap-1.5">
           <Text className="text-sm font-semibold text-foreground">
             Photo (optional)
           </Text>
-          {photoUri ? (
+          {photoUrl ? (
             <View className="overflow-hidden rounded-xl">
               <Image
-                source={{ uri: photoUri }}
+                source={{ uri: photoUrl }}
                 className="h-48 w-full"
                 resizeMode="cover"
               />
               <Pressable
-                onPress={() => setPhotoUri(null)}
+                onPress={() => setPhotoUrl(null)}
                 className="absolute right-2 top-2 h-9 w-9 items-center justify-center rounded-full bg-black/60"
               >
                 <Trash2 size={18} color={colors.white} />
@@ -287,11 +278,16 @@ export function ReportScreen() {
           ) : (
             <Pressable
               onPress={pickPhoto}
+              disabled={isUploading}
               className="h-24 items-center justify-center rounded-xl border border-dashed border-input bg-card"
             >
-              <Camera size={28} color={colors.mutedForeground} />
+              {isUploading ? (
+                <Loader2 size={28} color={colors.mutedForeground} className="animate-spin" />
+              ) : (
+                <Camera size={28} color={colors.mutedForeground} />
+              )}
               <Text className="mt-2 text-sm text-muted-foreground">
-                Add a photo of the document
+                {isUploading ? "Uploading..." : "Add a photo of the document"}
               </Text>
             </Pressable>
           )}

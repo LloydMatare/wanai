@@ -17,6 +17,7 @@
     "@radix-ui/react-tabs": "^1.1.21",
     "@radix-ui/react-tooltip": "^1.2.16",
     "@types/three": "^0.185.4",
+    "@uploadthing/react": "^7.3.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "convex": "^1.16.0",
@@ -29,7 +30,8 @@
     "sonner": "^2.0.8",
     "tailwind-merge": "^2.5.0",
     "tailwindcss-animate": "^1.0.7",
-    "three": "^0.185.1"
+    "three": "^0.185.1",
+    "uploadthing": "^7.7.4"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
